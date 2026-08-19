@@ -1,0 +1,8 @@
+&i2c1{
+status = "okay";
+	imu: mpu6050@68{
+		status = "okay";
+		compatible = "invensense,mpu6050";
+		reg = <0x68>;
+	};
+};
