@@ -7,5 +7,5 @@ project(hello_world)
 
 target_sources(
     app PRIVATE src/main.c
-    app PRIVATE src/PID_Controller.c
+    app PRIVATE src/PI_Controller.c
 )

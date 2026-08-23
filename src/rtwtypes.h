@@ -5,11 +5,11 @@
  *
  * File: rtwtypes.h
  *
- * Code generated for Simulink model 'PID_Controller'.
+ * Code generated for Simulink model 'PI_Controller'.
  *
- * Model version                  : 4.6
+ * Model version                  : 4.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Sat Aug 22 16:41:52 2026
+ * C/C++ source code generated on : Sun Aug 23 11:51:17 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M

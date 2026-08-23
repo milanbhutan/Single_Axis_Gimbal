@@ -3,13 +3,13 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: PID_Controller_private.h
+ * File: PI_Controller_private.h
  *
- * Code generated for Simulink model 'PID_Controller'.
+ * Code generated for Simulink model 'PI_Controller'.
  *
- * Model version                  : 4.6
+ * Model version                  : 4.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Sat Aug 22 16:41:52 2026
+ * C/C++ source code generated on : Sun Aug 23 11:51:17 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -17,16 +17,16 @@
  * Validation result: Not run
  */
 
-#ifndef PID_Controller_private_h_
-#define PID_Controller_private_h_
+#ifndef PI_Controller_private_h_
+#define PI_Controller_private_h_
 #include "rtwtypes.h"
-#include "PID_Controller.h"
-#include "PID_Controller_types.h"
+#include "PI_Controller.h"
+#include "PI_Controller_types.h"
 
-extern real_T PID_Controller_PID_Controller(real_T rtu_Theta_ref, real_T
-  rtu_Theta_meas, DW_PID_Controller_PID_Control_T *localDW);
+extern real_T PI_Controller_PI_Controller(real_T rtu_Gravity_ref, real_T
+  rtu_Gravity_meas, DW_PI_Controller_PI_Controlle_T *localDW);
 
-#endif                                 /* PID_Controller_private_h_ */
+#endif                                 /* PI_Controller_private_h_ */
 
 /*
  * File trailer for generated code.

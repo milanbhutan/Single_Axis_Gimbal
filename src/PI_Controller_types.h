@@ -3,13 +3,13 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: PID_Controller_types.h
+ * File: PI_Controller_types.h
  *
- * Code generated for Simulink model 'PID_Controller'.
+ * Code generated for Simulink model 'PI_Controller'.
  *
- * Model version                  : 4.6
+ * Model version                  : 4.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Sat Aug 22 16:41:52 2026
+ * C/C++ source code generated on : Sun Aug 23 11:51:17 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -17,13 +17,13 @@
  * Validation result: Not run
  */
 
-#ifndef PID_Controller_types_h_
-#define PID_Controller_types_h_
+#ifndef PI_Controller_types_h_
+#define PI_Controller_types_h_
 
 /* Forward declaration for rtModel */
-typedef struct tag_RTM_PID_Controller_T RT_MODEL_PID_Controller_T;
+typedef struct tag_RTM_PI_Controller_T RT_MODEL_PI_Controller_T;
 
-#endif                                 /* PID_Controller_types_h_ */
+#endif                                 /* PI_Controller_types_h_ */
 
 /*
  * File trailer for generated code.

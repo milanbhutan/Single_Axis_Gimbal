@@ -5,13 +5,10 @@
  */
 
 #include <stdio.h>
-#include <math.h>
-#include "PID_Controller.h"
+#include "PI_Controller.h"
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/pwm.h>
-
-#define RAD_TO_DEG(rad) (rad/(M_PI)) * 180
 
 #define CONTROL_TASK_STACK_SIZE 1024
 #define CONTROL_TASK_PRIORITY 3
@@ -51,11 +48,11 @@ K_THREAD_STACK_DEFINE(IMU_Read_Task_Stack, IMU_READ_TASK_SIZE);
 K_THREAD_STACK_DEFINE(Print_Task_Stack, PRINT_TASK_SIZE);
 
 uint32_t period = PWM_HZ(50);
-int servo_duty = 1500;
+int pulse_width_us = 1500;
 
 int main(void)
 {
-	PID_Controller_initialize();
+	PI_Controller_initialize();
 
 	Control_Task_ID = k_thread_create(
 		&Control_Task_TCB,
@@ -118,22 +115,21 @@ double filtered_acc = 0;
 	int64_t start = k_uptime_get();
 	
 	
-	
 	filtered_acc = (0.9 * filtered_acc) + 0.1 * (sensor_value_to_double(&myIMU.acc[1]) + 0.5);
 
-	PID_Controller_U.Theta_ref = 0;
-	PID_Controller_U.Theta_meas = filtered_acc;
+	PI_Controller_U.Gravity_ref = 0;
+	PI_Controller_U.Gravity_meas = filtered_acc;
 	
-	PID_Controller_step();
+	PI_Controller_step();
 
-	servo_duty = 1500 - PID_Controller_Y.Out1;
+	pulse_width_us = 1500 - PI_Controller_Y.Out1;
 
-	if(servo_duty > 1900){
-		servo_duty = 1900;
+	if(pulse_width_us > 1900){
+		pulse_width_us = 1900;
 	}
 
-	if(servo_duty < 1100){
-		servo_duty = 1100;
+	if(pulse_width_us < 1100){
+		pulse_width_us = 1100;
 	}
 
 
@@ -141,7 +137,7 @@ double filtered_acc = 0;
 		pwm_dev,
 		1,
 		period,
-		PWM_USEC(servo_duty),
+		PWM_USEC(pulse_width_us),
 		PWM_POLARITY_NORMAL
 	);
 
@@ -182,7 +178,7 @@ for(;;){
 void Print_Task(void *p1, void *p2, void *p3){
 for(;;){
 
-	printf("Servo Duty Cycle: %d us\n", servo_duty);
+	printf("Pulse Width: %d us \n", pulse_width_us);
 
 	k_msleep(1000);
 
