@@ -52,6 +52,7 @@ K_THREAD_STACK_DEFINE(IMU_Read_Task_Stack, IMU_READ_TASK_SIZE);
 K_THREAD_STACK_DEFINE(Print_Task_Stack, PRINT_TASK_SIZE);
 
 uint32_t period = PWM_HZ(50);
+int servo_duty = 1500;
 
 int main(void)
 {
@@ -111,23 +112,30 @@ int main(void)
 }
 
 void Control_Task(void *p1, void *p2, void *p3){
-for(;;){
+
+double filtered_acc = 0;
+
+	for(;;){
 	
 	int64_t start = k_uptime_get();
 	
+	
+	
+	filtered_acc = (0.9 * filtered_acc) + 0.1 * (sensor_value_to_double(&myIMU.acc[1]) + 0.5);
+
 	PID_Controller_U.Theta_ref = 0;
-	PID_Controller_U.Theta_meas = (sensor_value_to_double(&myIMU.acc[1]) + 0.5);
+	PID_Controller_U.Theta_meas = filtered_acc;
 	
 	PID_Controller_step();
 
-	int servo_duty = 1500 - (10 * PID_Controller_Y.Out1);
+	servo_duty = 1500 - PID_Controller_Y.Out1;
 
-	if(servo_duty > 1800){
-		servo_duty = 1800;
+	if(servo_duty > 1900){
+		servo_duty = 1900;
 	}
 
-	if(servo_duty < 1200){
-		servo_duty = 1200;
+	if(servo_duty < 1100){
+		servo_duty = 1100;
 	}
 
 
@@ -184,12 +192,13 @@ for(;;){
 
 	//printf("Controller Output: %.4f\n", PID_Controller_Y.Out1);
 	//printf("Y Angular Rate: %.4f\n\n", sensor_value_to_double(&myIMU.gyro[1]));
-	printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[0]));
-	printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[1]));
-	printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[2]));
-	printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[0]) - 0.5));
-	printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[1]) + 0.5));
-	printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[2]) + 0.5));
+	// printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[0]));
+	// printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[1]));
+	// printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[2]));
+	// printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[0]) - 0.5));
+	// printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[1]) + 0.5));
+	// printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[2]) + 0.5));
+	printf("Servo Duty Cycle: %d us\n", servo_duty);
 
 	k_msleep(1000);
 

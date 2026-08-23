@@ -55,8 +55,7 @@ real_T PID_Controller_PID_Controller(real_T rtu_Theta_ref, real_T rtu_Theta_meas
    *  DiscreteIntegrator: '<S37>/Integrator'
    *  Gain: '<S42>/Proportional Gain'
    */
-  rty_Out1_0 = (10.0 * rtb_Sum_a + localDW->Integrator_DSTATE) +
-    rtb_FilterCoefficient;
+  rty_Out1_0 = (120.0 * rtb_Sum_a + localDW->Integrator_DSTATE);
 
   /* Update for DiscreteIntegrator: '<S32>/Filter' */
   localDW->Filter_DSTATE += 0.01 * rtb_FilterCoefficient;
