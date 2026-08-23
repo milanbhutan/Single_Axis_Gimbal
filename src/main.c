@@ -40,7 +40,6 @@ typedef struct{
 	struct sensor_value acc[3];
 }imu;
 
-
 imu myIMU = {0};
 imu myIMU_old = {0};
 
@@ -96,7 +95,6 @@ int main(void)
 		0,
 		K_NO_WAIT
 	);
-
 
 
 	pwm_set(
@@ -174,12 +172,6 @@ for(;;){
 			myIMU.acc
 		);
 
-		// printf("%.4f\n", sensor_value_to_double(&myIMU.gyro[0]));
-		// printf("%.4f\n", sensor_value_to_double(&myIMU.gyro[1]));
-		// printf("%.4f\n", sensor_value_to_double(&myIMU.gyro[2]));
-		// printf("%.4f\n", (sensor_value_to_double(&myIMU.acc[0]) - 0.5));
-		// printf("%.4f\n", (sensor_value_to_double(&myIMU.acc[1]) + 0.5));
-		// printf("%.4f\n", (sensor_value_to_double(&myIMU.acc[2]) + 0.5));
 	}
 
 	k_msleep(10);
@@ -190,14 +182,6 @@ for(;;){
 void Print_Task(void *p1, void *p2, void *p3){
 for(;;){
 
-	//printf("Controller Output: %.4f\n", PID_Controller_Y.Out1);
-	//printf("Y Angular Rate: %.4f\n\n", sensor_value_to_double(&myIMU.gyro[1]));
-	// printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[0]));
-	// printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[1]));
-	// printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[2]));
-	// printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[0]) - 0.5));
-	// printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[1]) + 0.5));
-	// printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[2]) + 0.5));
 	printf("Servo Duty Cycle: %d us\n", servo_duty);
 
 	k_msleep(1000);
