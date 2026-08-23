@@ -5,8 +5,13 @@
  */
 
 #include <stdio.h>
+#include <math.h>
+#include "PID_Controller.h"
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/pwm.h>
+
+#define RAD_TO_DEG(rad) (rad/(M_PI)) * 180
 
 #define CONTROL_TASK_STACK_SIZE 1024
 #define CONTROL_TASK_PRIORITY 3
@@ -14,8 +19,12 @@
 #define IMU_READ_TASK_SIZE 1024
 #define IMU_READ_TASK_PRIORITY 5
 
+#define PRINT_TASK_SIZE 1024
+#define PRINT_TASK_PRIORITY 7
+
 void Control_Task(void *p1, void *p2, void *p3);
 void IMU_Read_Task(void *p1, void *p2, void *p3);
+void Print_Task(void *p1, void *p2, void *p3);
 
 struct k_thread Control_Task_TCB;
 k_tid_t Control_Task_ID;
@@ -23,19 +32,31 @@ k_tid_t Control_Task_ID;
 struct k_thread IMU_Read_Task_TCB;
 k_tid_t IMU_Read_Task_ID;
 
+struct k_thread Print_Task_TCB;
+k_tid_t Print_Task_ID;
+
 typedef struct{
- 	uint32_t data;
-} imu;
+	struct sensor_value gyro[3];
+	struct sensor_value acc[3];
+}imu;
+
 
 imu myIMU = {0};
+imu myIMU_old = {0};
 
 const struct device *imu_dev = DEVICE_DT_GET_ONE(invensense_mpu6050);
+const struct device *pwm_dev = DEVICE_DT_GET(DT_NODELABEL(pwm2));
 
 K_THREAD_STACK_DEFINE(Control_Task_Stack, CONTROL_TASK_STACK_SIZE);
-K_THREAD_STACK_DEFINE(IMU_Read_Task_Stack, 1024);
+K_THREAD_STACK_DEFINE(IMU_Read_Task_Stack, IMU_READ_TASK_SIZE);
+K_THREAD_STACK_DEFINE(Print_Task_Stack, PRINT_TASK_SIZE);
+
+uint32_t period = PWM_HZ(50);
 
 int main(void)
 {
+	PID_Controller_initialize();
+
 	Control_Task_ID = k_thread_create(
 		&Control_Task_TCB,
 		Control_Task_Stack,
@@ -62,14 +83,66 @@ int main(void)
 		K_NO_WAIT
 	);
 
+	Print_Task_ID = k_thread_create(
+		&Print_Task_TCB,
+		Print_Task_Stack,
+		K_THREAD_STACK_SIZEOF(Print_Task_Stack),
+		Print_Task,
+		NULL,
+		NULL,
+		NULL,
+		PRINT_TASK_PRIORITY,
+		0,
+		K_NO_WAIT
+	);
+
+
+
+	pwm_set(
+		pwm_dev,
+		1,
+		period,
+		PWM_USEC(1500),
+		PWM_POLARITY_NORMAL
+	);
+
+
 	return 0;
 }
 
 void Control_Task(void *p1, void *p2, void *p3){
 for(;;){
 	
-	printf("Control Task\n");
-	k_msleep(1000);
+	int64_t start = k_uptime_get();
+	
+	PID_Controller_U.Theta_ref = 0;
+	PID_Controller_U.Theta_meas = (sensor_value_to_double(&myIMU.acc[1]) + 0.5);
+	
+	PID_Controller_step();
+
+	int servo_duty = 1500 - (10 * PID_Controller_Y.Out1);
+
+	if(servo_duty > 1800){
+		servo_duty = 1800;
+	}
+
+	if(servo_duty < 1200){
+		servo_duty = 1200;
+	}
+
+
+	pwm_set(
+		pwm_dev,
+		1,
+		period,
+		PWM_USEC(servo_duty),
+		PWM_POLARITY_NORMAL
+	);
+
+	int64_t end = k_uptime_get();
+
+
+	k_msleep(10 - (end - start));
 }
 
 }
@@ -77,13 +150,51 @@ for(;;){
 
 void IMU_Read_Task(void *p1, void *p2, void *p3){
 for(;;){
-	//DEVICE_DT_GET_ONE(imu, inverse_imu)
-	sensor_sample_fetch(imu_dev);
-	printf("IMU Read Task\n");
-	k_msleep(2000);
+
+	if(sensor_sample_fetch(imu_dev) == 0){
+		
+		memcpy(&myIMU_old, &myIMU, sizeof(myIMU));
+
+		sensor_channel_get(
+			imu_dev,
+			SENSOR_CHAN_GYRO_XYZ,
+			myIMU.gyro
+		);
+		sensor_channel_get(
+			imu_dev,
+			SENSOR_CHAN_ACCEL_XYZ,
+			myIMU.acc
+		);
+
+		// printf("%.4f\n", sensor_value_to_double(&myIMU.gyro[0]));
+		// printf("%.4f\n", sensor_value_to_double(&myIMU.gyro[1]));
+		// printf("%.4f\n", sensor_value_to_double(&myIMU.gyro[2]));
+		// printf("%.4f\n", (sensor_value_to_double(&myIMU.acc[0]) - 0.5));
+		// printf("%.4f\n", (sensor_value_to_double(&myIMU.acc[1]) + 0.5));
+		// printf("%.4f\n", (sensor_value_to_double(&myIMU.acc[2]) + 0.5));
+	}
+
+	k_msleep(10);
 }
 
 }
 
+void Print_Task(void *p1, void *p2, void *p3){
+for(;;){
+
+	//printf("Controller Output: %.4f\n", PID_Controller_Y.Out1);
+	//printf("Y Angular Rate: %.4f\n\n", sensor_value_to_double(&myIMU.gyro[1]));
+	printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[0]));
+	printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[1]));
+	printf("%.4f\n", sensor_value_to_double(&myIMU_old.gyro[2]));
+	printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[0]) - 0.5));
+	printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[1]) + 0.5));
+	printf("%.4f\n", (sensor_value_to_double(&myIMU_old.acc[2]) + 0.5));
+
+	k_msleep(1000);
+
+}
+
+}
 
 
