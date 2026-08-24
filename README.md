@@ -18,15 +18,17 @@ Any rotation about the z axis will lead to a non-zero change in $a_y$ whose sign
 
 $e(\theta) = a_{y,ref} - a_{y,meas}(\theta)$ 
 
-where $a_{y,ref} = 0$, since this is the acceleration where the IMU is upright. The controller output is fed into a first-order plant which approximates the lag associated with the servo movement. The plant will then output $a_{y,meas}(\theta)$ which is negatively fed back into the PI controller, creating a closed loop system which is shown below.
+where $a_{y,ref} = 0$, since this is the acceleration where the IMU is upright. The controller output is fed into a first-order plant which approximates the lag associated with the servo movement. The plant will then output $a_{y,meas}(\theta)$ which is negatively fed back into the PI controller, creating a closed loop system which is shown below
 
 <img width="1857" height="517" alt="image" src="https://github.com/user-attachments/assets/8e748a41-85bc-4a24-ae55-6cf9e759b705" />
 
 <br><br>
 
-The figure below shows the simulated step response of the closed-loop system.
+The figure below shows the simulated step response of the closed-loop system
 
 <img width="2553" height="1452" alt="image" src="https://github.com/user-attachments/assets/45527c5d-8f80-46a0-8cc6-aba99115c5f8" />
 
 
 ## Software Layout
+<img width="2204" height="718" alt="image" src="https://github.com/user-attachments/assets/a819f6c6-eee7-4e1d-82c3-e8fda082111b" />
+
