@@ -20,7 +20,7 @@ $e(\theta) = a_{y,ref} - a_{y,meas}(\theta)$
 
 where $a_{y,ref} = 0$, since this is the acceleration where the IMU is upright. The controller output is fed into a first-order plant which approximates the lag associated with the servo movement. The plant will then output $a_{y,meas}(\theta)$ which is negatively fed back into the PI controller, creating a closed loop system which is shown below
 
-<img width="1857" height="517" alt="image" src="https://github.com/user-attachments/assets/8e748a41-85bc-4a24-ae55-6cf9e759b705" />
+<img width="2121" height="466" alt="image" src="https://github.com/user-attachments/assets/cb743627-c79d-4c44-a66a-186e405763c4" />
 
 <br><br>
 
