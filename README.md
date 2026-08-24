@@ -1,3 +1,5 @@
+# Video Demo
+
 # Single Axis Gimbal
 
 Used an STM32 to run a 100 Hz digital PI controller for stabilizing an IMU using accelerometer feedback and servo actuation. Zephyr RTOS was also used to configure peripherals using the Devicetree and interface with them by using their device APIs. The PI controller was first designed in Simulink, after which the Embedded Coder tool was used to generate code for this controller which would then be deployed on the STM32.
