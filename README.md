@@ -1,6 +1,6 @@
 # Single Axis Gimbal
 
-Used an STM32 to run a 100 Hz digital PI controller for stabilizing an IMU using accelerometer feedback and servo actuation. Zephyr RTOS was also used to configure peripherials using the device tree and interface with them by using their device APIs. The PI controller was first designed in Simulink, after which the Embedded Coder tool was used to generate code for this controller which would then be deployed on the STM32.
+Used an STM32 to run a 100 Hz digital PI controller for stabilizing an IMU using accelerometer feedback and servo actuation. Zephyr RTOS was also used to configure peripherals using the Devicetree and interface with them by using their device APIs. The PI controller was first designed in Simulink, after which the Embedded Coder tool was used to generate code for this controller which would then be deployed on the STM32.
 
 ## Model Dynamics and Simulink Model
 The figure below shows the IMU in the upright orientation, which is assumed to be when the IMU's measured acceleration along the y-axis, $a_y$, equals 0
@@ -18,7 +18,7 @@ Any rotation about the z axis will lead to a non-zero change in $a_y$ whose sign
 
 $e(\theta) = a_{y,ref} - a_{y,meas}(\theta)$ 
 
-where $a_{y,ref} = 0$, since this is the acceleration where the IMU is upright. The controller output is fed into first-order plant which approximates the lag associated with the servo movement. The plant will then output $a_{y,meas}(\theta)$ and negatively feedback into the PI controller, creating a closed loop system which is shown below.
+where $a_{y,ref} = 0$, since this is the acceleration where the IMU is upright. The controller output is fed into a first-order plant which approximates the lag associated with the servo movement. The plant will then output $a_{y,meas}(\theta)$ which is negatively fed back into the PI controller, creating a closed loop system which is shown below.
 
 <img width="1857" height="517" alt="image" src="https://github.com/user-attachments/assets/8e748a41-85bc-4a24-ae55-6cf9e759b705" />
 
