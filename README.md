@@ -32,5 +32,6 @@ The figure below shows the simulated step response of the closed-loop system
 
 
 ## Software Layout
-<img width="2204" height="718" alt="image" src="https://github.com/user-attachments/assets/a819f6c6-eee7-4e1d-82c3-e8fda082111b" />
+<img width="2409" height="885" alt="image" src="https://github.com/user-attachments/assets/f3de8d60-3c09-474e-89cf-56dae85b8472" />
+
 
